@@ -23,7 +23,9 @@ const page = usePage();
 
 const mainNavItems = computed<NavItem[]>(() => [
     { title: 'Generate images', href: dashboard(), icon: Image },
-    ...(page.props.auth.user?.is_admin ? [{ title: 'Spend report', href: report(), icon: ChartColumn }] : []),
+    ...(page.props.auth.user?.is_admin
+        ? [{ title: 'Spend report', href: report(), icon: ChartColumn }]
+        : []),
 ]);
 
 const footerNavItems: NavItem[] = [

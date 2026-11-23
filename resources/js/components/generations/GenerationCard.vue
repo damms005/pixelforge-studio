@@ -69,7 +69,9 @@ const createdAt = computed(() =>
             >
                 <LoaderCircle class="size-6 animate-spin" />
                 <span v-if="waitingNote">{{ waitingNote }}</span>
-                <span v-else-if="generation.status === 'processing'">Drawing…</span>
+                <span v-else-if="generation.status === 'processing'"
+                    >Drawing…</span
+                >
                 <span v-else>In the queue…</span>
             </div>
         </div>
@@ -80,7 +82,9 @@ const createdAt = computed(() =>
                     :status="generation.status"
                     :retry-reason="generation.retry_reason"
                 />
-                <span class="text-xs text-muted-foreground">{{ createdAt }}</span>
+                <span class="text-xs text-muted-foreground">{{
+                    createdAt
+                }}</span>
             </div>
 
             <p class="line-clamp-3 text-sm" :title="generation.prompt">
@@ -88,20 +92,26 @@ const createdAt = computed(() =>
             </p>
 
             <p class="text-xs text-muted-foreground">
-                {{ generation.size.replace('x', ' × ') }} · {{ generation.quality }} quality
+                {{ generation.size.replace('x', ' × ') }} ·
+                {{ generation.quality }} quality
                 <template v-if="generation.reference_images.length">
                     · {{ generation.reference_images.length }} reference
-                    {{ generation.reference_images.length === 1 ? 'image' : 'images' }}
+                    {{
+                        generation.reference_images.length === 1
+                            ? 'image'
+                            : 'images'
+                    }}
                 </template>
             </p>
 
-            <dl
-                class="mt-auto grid grid-cols-2 gap-2 border-t pt-3 text-xs"
-            >
+            <dl class="mt-auto grid grid-cols-2 gap-2 border-t pt-3 text-xs">
                 <div>
                     <dt class="text-muted-foreground">Estimated</dt>
                     <dd class="font-medium">
-                        <MoneyRange :min="generation.estimated_min" :max="generation.estimated_max" />
+                        <MoneyRange
+                            :min="generation.estimated_min"
+                            :max="generation.estimated_max"
+                        />
                     </dd>
                 </div>
                 <div>
@@ -110,7 +120,10 @@ const createdAt = computed(() =>
                         <template v-if="generation.status === 'failed'">
                             <Money amount="0" /> (not charged)
                         </template>
-                        <Money v-else-if="generation.charged !== null" :amount="generation.charged" />
+                        <Money
+                            v-else-if="generation.charged !== null"
+                            :amount="generation.charged"
+                        />
                         <template v-else>Known when finished</template>
                     </dd>
                 </div>

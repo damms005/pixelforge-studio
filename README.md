@@ -59,17 +59,17 @@ Taken from the live app. The user screens use the demo account; the spend report
 
 ## Pixelforge's failure modes
 
-| What Pixelforge does | What the app does |
-| --- | --- |
-| 429 rate / concurrency limit, 503 overloaded | `SubmitGeneration` job waits for `Retry-After` (backoff, cap 60 s, jitter) and tries again with the same `Idempotency-Key` (the generation's UUID). The card shows "Waiting for Pixelforge". After 25 attempts it gives up, marks the generation failed and refunds the hold. |
-| 400 content policy, 422, daily limit | Failed at once, nothing charged, the reason is shown. |
-| Network error or timeout on create | Retried with the same `Idempotency-Key`, so Pixelforge never creates a second generation. |
-| Generation fails after it was accepted | `generation.failed` → failed, hold released, $0. |
-| Webhook delivered twice | The event id is stored in `webhook_events` (unique) in the same transaction that applies the event. A repeat is skipped. |
-| Webhooks out of order | `GenerationUpdater` locks the row and only moves a generation forward (pending → queued → processing → succeeded/failed). Final generations never change, so a late `processing` event is ignored and a generation is charged once even if a webhook and a poll both report success. |
-| Webhook before the create request returns | The generation's UUID is sent in `metadata`, so the webhook finds the row and links the provider id. |
-| Webhook never arrives | `generations:sync` (every minute) polls queued/processing generations that have been quiet for 90 s and applies the result through the same updater. |
-| Bad or replayed signature | HMAC-SHA256 of `t.body`, compared in constant time, 5-minute tolerance. Rejected with 400 before anything is stored. |
+| What Pixelforge does                         | What the app does                                                                                                                                                                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 429 rate / concurrency limit, 503 overloaded | `SubmitGeneration` job waits for `Retry-After` (backoff, cap 60 s, jitter) and tries again with the same `Idempotency-Key` (the generation's UUID). The card shows "Waiting for Pixelforge". After 25 attempts it gives up, marks the generation failed and refunds the hold.        |
+| 400 content policy, 422, daily limit         | Failed at once, nothing charged, the reason is shown.                                                                                                                                                                                                                                |
+| Network error or timeout on create           | Retried with the same `Idempotency-Key`, so Pixelforge never creates a second generation.                                                                                                                                                                                            |
+| Generation fails after it was accepted       | `generation.failed` → failed, hold released, $0.                                                                                                                                                                                                                                     |
+| Webhook delivered twice                      | The event id is stored in `webhook_events` (unique) in the same transaction that applies the event. A repeat is skipped.                                                                                                                                                             |
+| Webhooks out of order                        | `GenerationUpdater` locks the row and only moves a generation forward (pending → queued → processing → succeeded/failed). Final generations never change, so a late `processing` event is ignored and a generation is charged once even if a webhook and a poll both report success. |
+| Webhook before the create request returns    | The generation's UUID is sent in `metadata`, so the webhook finds the row and links the provider id.                                                                                                                                                                                 |
+| Webhook never arrives                        | `generations:sync` (every minute) polls queued/processing generations that have been quiet for 90 s and applies the result through the same updater.                                                                                                                                 |
+| Bad or replayed signature                    | HMAC-SHA256 of `t.body`, compared in constant time, 5-minute tolerance. Rejected with 400 before anything is stored.                                                                                                                                                                 |
 
 Image URLs expire after 24 hours; the card then says so.
 

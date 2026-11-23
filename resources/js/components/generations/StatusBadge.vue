@@ -2,7 +2,10 @@
 import { computed } from 'vue';
 import type { GenerationStatus } from '@/types/generations';
 
-const props = defineProps<{ status: GenerationStatus; retryReason?: string | null }>();
+const props = defineProps<{
+    status: GenerationStatus;
+    retryReason?: string | null;
+}>();
 
 const styles: Record<GenerationStatus, string> = {
     pending: 'bg-slate-500/15 text-slate-700 dark:text-slate-300',
@@ -20,7 +23,9 @@ const label = computed(() => {
     return props.status.charAt(0).toUpperCase() + props.status.slice(1);
 });
 
-const isActive = computed(() => ['pending', 'queued', 'processing'].includes(props.status));
+const isActive = computed(() =>
+    ['pending', 'queued', 'processing'].includes(props.status),
+);
 </script>
 
 <template>

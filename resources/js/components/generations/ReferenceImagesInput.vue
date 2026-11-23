@@ -14,7 +14,9 @@ function add() {
 }
 
 function update(position: number, url: string) {
-    urls.value = urls.value.map((current, i) => (i === position ? url : current));
+    urls.value = urls.value.map((current, i) =>
+        i === position ? url : current,
+    );
 }
 
 function remove(position: number) {
@@ -25,8 +27,19 @@ function remove(position: number) {
 <template>
     <div class="grid gap-2">
         <div class="flex items-center justify-between">
-            <Label>Reference images <span class="font-normal text-muted-foreground">(optional)</span></Label>
-            <Button type="button" variant="ghost" size="sm" :disabled="urls.length >= max" @click="add">
+            <Label
+                >Reference images
+                <span class="font-normal text-muted-foreground"
+                    >(optional)</span
+                ></Label
+            >
+            <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                :disabled="urls.length >= max"
+                @click="add"
+            >
                 <Plus class="size-4" /> Add URL
             </Button>
         </div>
@@ -36,7 +49,9 @@ function remove(position: number) {
                 type="url"
                 placeholder="https://example.com/style.png"
                 class="h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                @input="update(position, ($event.target as HTMLInputElement).value)"
+                @input="
+                    update(position, ($event.target as HTMLInputElement).value)
+                "
             />
             <button
                 type="button"
@@ -48,7 +63,8 @@ function remove(position: number) {
             </button>
         </div>
         <p v-if="urls.length === 0" class="text-xs text-muted-foreground">
-            Up to {{ max }} image URLs to guide the style. Each adds 765 input image tokens.
+            Up to {{ max }} image URLs to guide the style. Each adds 765 input
+            image tokens.
         </p>
     </div>
 </template>

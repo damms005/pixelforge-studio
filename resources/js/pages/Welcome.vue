@@ -30,9 +30,13 @@ const points = [
     <Head title="Image generation with exact per-token billing" />
 
     <div class="flex min-h-screen flex-col bg-background text-foreground">
-        <header class="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-5">
+        <header
+            class="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-5"
+        >
             <div class="flex items-center gap-2">
-                <div class="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <div
+                    class="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground"
+                >
                     <AppLogoIcon class="size-5" />
                 </div>
                 <span class="font-semibold">{{ $page.props.name }}</span>
@@ -52,14 +56,17 @@ const points = [
             </nav>
         </header>
 
-        <main class="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-12 px-6 py-12">
+        <main
+            class="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-12 px-6 py-12"
+        >
             <section class="max-w-2xl">
                 <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
                     Generate images on the Pixelforge API and pay the exact cost
                 </h1>
                 <p class="mt-4 text-lg text-muted-foreground">
-                    Write a prompt, pick a size and quality, and see your images as they finish. Each image costs
-                    what Pixelforge charges for its tokens, plus 25%.
+                    Write a prompt, pick a size and quality, and see your images
+                    as they finish. Each image costs what Pixelforge charges for
+                    its tokens, plus 25%.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
                     <Button v-if="$page.props.auth.user" size="lg" as-child>
@@ -82,16 +89,31 @@ const points = [
                     :key="point.title"
                     class="rounded-xl border border-sidebar-border/70 p-5 dark:border-sidebar-border"
                 >
-                    <component :is="point.icon" class="size-5 text-muted-foreground" />
+                    <component
+                        :is="point.icon"
+                        class="size-5 text-muted-foreground"
+                    />
                     <h2 class="mt-3 font-medium">{{ point.title }}</h2>
-                    <p class="mt-1 text-sm text-muted-foreground">{{ point.text }}</p>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        {{ point.text }}
+                    </p>
                 </article>
             </section>
         </main>
 
-        <footer class="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-muted-foreground">
-            <span>Credits are US dollars. Purchases on this demo are not charged.</span>
-            <a :href="REPOSITORY_URL" class="inline-flex items-center gap-1.5 hover:text-foreground" target="_blank" rel="noopener">
+        <footer
+            class="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-muted-foreground"
+        >
+            <span
+                >Credits are US dollars. Purchases on this demo are not
+                charged.</span
+            >
+            <a
+                :href="REPOSITORY_URL"
+                class="inline-flex items-center gap-1.5 hover:text-foreground"
+                target="_blank"
+                rel="noopener"
+            >
                 <FolderGit2 class="size-4" /> Source code
             </a>
         </footer>

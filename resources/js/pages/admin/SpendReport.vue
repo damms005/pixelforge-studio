@@ -39,7 +39,13 @@ const props = defineProps<{
     start: string;
     end: string;
     days: Day[];
-    totals: { generations: number; charged: string; provider_cost: string; profit: string; pixelforge_cost: string | null };
+    totals: {
+        generations: number;
+        charged: string;
+        provider_cost: string;
+        profit: string;
+        pixelforge_cost: string | null;
+    };
     pixelforge_error: string | null;
 }>();
 
@@ -58,8 +64,9 @@ function apply() {
             <div>
                 <h1 class="text-xl font-semibold">Spend report</h1>
                 <p class="text-sm text-muted-foreground">
-                    Per UTC day, by the day each generation completed (Pixelforge's billing day). Provider cost is checked
-                    against <code>GET /v1/usage</code> for this app's API key.
+                    Per UTC day, by the day each generation completed
+                    (Pixelforge's billing day). Provider cost is checked against
+                    <code>GET /v1/usage</code> for this app's API key.
                 </p>
             </div>
             <form class="flex items-end gap-2" @submit.prevent="apply">
@@ -75,68 +82,138 @@ function apply() {
             </form>
         </div>
 
-        <p v-if="pixelforge_error" class="rounded-md bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300">
+        <p
+            v-if="pixelforge_error"
+            class="rounded-md bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300"
+        >
             Could not load Pixelforge usage: {{ pixelforge_error }}
         </p>
 
         <div class="grid gap-4 sm:grid-cols-4">
             <div class="rounded-xl border p-4">
-                <div class="text-xs text-muted-foreground">Credit spend (charged to users)</div>
-                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.charged" :decimals="4" /></div>
+                <div class="text-xs text-muted-foreground">
+                    Credit spend (charged to users)
+                </div>
+                <div class="text-xl font-semibold tabular-nums">
+                    <Money :amount="totals.charged" :decimals="4" />
+                </div>
             </div>
             <div class="rounded-xl border p-4">
-                <div class="text-xs text-muted-foreground">Provider cost (our records)</div>
-                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.provider_cost" :decimals="4" /></div>
+                <div class="text-xs text-muted-foreground">
+                    Provider cost (our records)
+                </div>
+                <div class="text-xl font-semibold tabular-nums">
+                    <Money :amount="totals.provider_cost" :decimals="4" />
+                </div>
             </div>
             <div class="rounded-xl border p-4">
-                <div class="text-xs text-muted-foreground">Pixelforge reports</div>
-                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.pixelforge_cost" :decimals="4" /></div>
+                <div class="text-xs text-muted-foreground">
+                    Pixelforge reports
+                </div>
+                <div class="text-xl font-semibold tabular-nums">
+                    <Money :amount="totals.pixelforge_cost" :decimals="4" />
+                </div>
             </div>
             <div class="rounded-xl border p-4">
                 <div class="text-xs text-muted-foreground">Profit</div>
-                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.profit" :decimals="4" /></div>
+                <div class="text-xl font-semibold tabular-nums">
+                    <Money :amount="totals.profit" :decimals="4" />
+                </div>
             </div>
         </div>
 
         <div class="overflow-x-auto rounded-xl border">
             <table class="w-full text-sm">
-                <thead class="bg-muted/50 text-left text-xs text-muted-foreground">
+                <thead
+                    class="bg-muted/50 text-left text-xs text-muted-foreground"
+                >
                     <tr>
                         <th class="px-4 py-2 font-medium">Day / user</th>
                         <th class="px-4 py-2 text-right font-medium">Images</th>
-                        <th class="px-4 py-2 text-right font-medium">Credit spend</th>
-                        <th class="px-4 py-2 text-right font-medium">Provider cost</th>
-                        <th class="px-4 py-2 text-right font-medium">Pixelforge reports</th>
+                        <th class="px-4 py-2 text-right font-medium">
+                            Credit spend
+                        </th>
+                        <th class="px-4 py-2 text-right font-medium">
+                            Provider cost
+                        </th>
+                        <th class="px-4 py-2 text-right font-medium">
+                            Pixelforge reports
+                        </th>
                         <th class="px-4 py-2 text-right font-medium">Profit</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template v-for="day in days" :key="day.date">
-                        <tr class="border-t" :class="day.generations ? 'font-medium' : 'text-muted-foreground'">
+                        <tr
+                            class="border-t"
+                            :class="
+                                day.generations
+                                    ? 'font-medium'
+                                    : 'text-muted-foreground'
+                            "
+                        >
                             <td class="px-4 py-2">{{ day.date }}</td>
-                            <td class="px-4 py-2 text-right tabular-nums">{{ day.generations }}</td>
-                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.charged" :decimals="4" /></td>
-                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.provider_cost" :decimals="4" /></td>
+                            <td class="px-4 py-2 text-right tabular-nums">
+                                {{ day.generations }}
+                            </td>
+                            <td class="px-4 py-2 text-right tabular-nums">
+                                <Money :amount="day.charged" :decimals="4" />
+                            </td>
+                            <td class="px-4 py-2 text-right tabular-nums">
+                                <Money
+                                    :amount="day.provider_cost"
+                                    :decimals="4"
+                                />
+                            </td>
                             <td class="px-4 py-2 text-right tabular-nums">
                                 <span class="inline-flex items-center gap-1">
-                                    <Money :amount="day.pixelforge_cost" :decimals="4" />
-                                    <Check v-if="day.matches_pixelforge === true" class="size-4 text-emerald-600" aria-label="Matches" />
+                                    <Money
+                                        :amount="day.pixelforge_cost"
+                                        :decimals="4"
+                                    />
+                                    <Check
+                                        v-if="day.matches_pixelforge === true"
+                                        class="size-4 text-emerald-600"
+                                        aria-label="Matches"
+                                    />
                                     <TriangleAlert
-                                        v-else-if="day.matches_pixelforge === false"
+                                        v-else-if="
+                                            day.matches_pixelforge === false
+                                        "
                                         class="size-4 text-amber-600"
                                         aria-label="Does not match our records"
                                     />
                                 </span>
                             </td>
-                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.profit" :decimals="4" /></td>
+                            <td class="px-4 py-2 text-right tabular-nums">
+                                <Money :amount="day.profit" :decimals="4" />
+                            </td>
                         </tr>
-                        <tr v-for="user in day.users" :key="`${day.date}-${user.user_id}`" class="text-muted-foreground">
-                            <td class="py-1.5 pr-4 pl-8">{{ user.name }} <span class="text-xs">({{ user.email }})</span></td>
-                            <td class="px-4 py-1.5 text-right tabular-nums">{{ user.generations }}</td>
-                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.charged" :decimals="4" /></td>
-                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.provider_cost" :decimals="4" /></td>
+                        <tr
+                            v-for="user in day.users"
+                            :key="`${day.date}-${user.user_id}`"
+                            class="text-muted-foreground"
+                        >
+                            <td class="py-1.5 pr-4 pl-8">
+                                {{ user.name }}
+                                <span class="text-xs">({{ user.email }})</span>
+                            </td>
+                            <td class="px-4 py-1.5 text-right tabular-nums">
+                                {{ user.generations }}
+                            </td>
+                            <td class="px-4 py-1.5 text-right tabular-nums">
+                                <Money :amount="user.charged" :decimals="4" />
+                            </td>
+                            <td class="px-4 py-1.5 text-right tabular-nums">
+                                <Money
+                                    :amount="user.provider_cost"
+                                    :decimals="4"
+                                />
+                            </td>
                             <td class="px-4 py-1.5" />
-                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.profit" :decimals="4" /></td>
+                            <td class="px-4 py-1.5 text-right tabular-nums">
+                                <Money :amount="user.profit" :decimals="4" />
+                            </td>
                         </tr>
                     </template>
                 </tbody>

@@ -13,7 +13,11 @@ import { Label } from '@/components/ui/label';
 import { dashboard } from '@/routes';
 import { store as buyCredits } from '@/routes/credits';
 import { estimate as estimateRoute, store } from '@/routes/generations';
-import type { Estimate, Generation, GenerationOptions } from '@/types/generations';
+import type {
+    Estimate,
+    Generation,
+    GenerationOptions,
+} from '@/types/generations';
 
 defineOptions({
     layout: {
@@ -32,7 +36,9 @@ const CREDIT_PACKS = [1, 5, 10];
 const form = useForm<GenerationInput>({
     prompt: '',
     size: props.options.sizes[0] ?? '1024x1024',
-    quality: props.options.qualities.includes('medium') ? 'medium' : props.options.qualities[0],
+    quality: props.options.qualities.includes('medium')
+        ? 'medium'
+        : props.options.qualities[0],
     reference_images: [] as string[],
 });
 
@@ -61,29 +67,47 @@ const refreshEstimate = useDebounceFn(() => {
     estimate.prompt = form.prompt;
     estimate.size = form.size;
     estimate.quality = form.quality;
-    estimate.reference_images = form.reference_images.filter((url) => url.trim() !== '');
+    estimate.reference_images = form.reference_images.filter(
+        (url) => url.trim() !== '',
+    );
     estimate.post(estimateRoute.url()).catch(() => {});
 }, 300);
 
-watch(() => [form.prompt, form.size, form.quality, [...form.reference_images]], refreshEstimate);
+watch(
+    () => [form.prompt, form.size, form.quality, [...form.reference_images]],
+    refreshEstimate,
+);
 
-const formErrors = computed(() => form.errors as Record<string, string | undefined>);
+const formErrors = computed(
+    () => form.errors as Record<string, string | undefined>,
+);
 
-const referenceImageError = computed(() =>
-    Object.entries(formErrors.value).find(([field]) => field.startsWith('reference_images.'))?.[1],
+const referenceImageError = computed(
+    () =>
+        Object.entries(formErrors.value).find(([field]) =>
+            field.startsWith('reference_images.'),
+        )?.[1],
 );
 
 const creditsError = computed(() => formErrors.value.credits);
 
 const promptLength = computed(() => [...form.prompt].length);
 
-const estimateError = computed(() => Object.values(estimate.errors)[0] as string | undefined);
-
-const hasActiveGenerations = computed(() =>
-    props.generations.some((generation) => ['pending', 'queued', 'processing'].includes(generation.status)),
+const estimateError = computed(
+    () => Object.values(estimate.errors)[0] as string | undefined,
 );
 
-const { start, stop } = usePoll(2500, { only: ['generations', 'balance'] }, { autoStart: false });
+const hasActiveGenerations = computed(() =>
+    props.generations.some((generation) =>
+        ['pending', 'queued', 'processing'].includes(generation.status),
+    ),
+);
+
+const { start, stop } = usePoll(
+    2500,
+    { only: ['generations', 'balance'] },
+    { autoStart: false },
+);
 
 watch(hasActiveGenerations, (active) => (active ? start() : stop()));
 onMounted(() => hasActiveGenerations.value && start());
@@ -91,7 +115,9 @@ onMounted(() => hasActiveGenerations.value && start());
 function submit() {
     form.transform((data) => ({
         ...data,
-        reference_images: data.reference_images.filter((url) => url.trim() !== ''),
+        reference_images: data.reference_images.filter(
+            (url) => url.trim() !== '',
+        ),
     })).submit(store(), {
         preserveScroll: true,
         onSuccess: () => {
@@ -102,7 +128,11 @@ function submit() {
 }
 
 function buy(dollars: number) {
-    router.post(buyCredits.url(), { dollars }, { preserveScroll: true, only: ['balance', 'flash'] });
+    router.post(
+        buyCredits.url(),
+        { dollars },
+        { preserveScroll: true, only: ['balance', 'flash'] },
+    );
 }
 </script>
 
@@ -119,10 +149,14 @@ function buy(dollars: number) {
                     <div class="flex items-baseline justify-between">
                         <Label for="prompt">Prompt</Label>
                         <span
-                            class="text-xs tabular-nums text-muted-foreground"
-                            :class="{ 'text-red-600': promptLength > options.max_prompt_length }"
+                            class="text-xs text-muted-foreground tabular-nums"
+                            :class="{
+                                'text-red-600':
+                                    promptLength > options.max_prompt_length,
+                            }"
                         >
-                            {{ promptLength.toLocaleString() }} / {{ options.max_prompt_length.toLocaleString() }}
+                            {{ promptLength.toLocaleString() }} /
+                            {{ options.max_prompt_length.toLocaleString() }}
                         </span>
                     </div>
                     <textarea
@@ -144,7 +178,11 @@ function buy(dollars: number) {
                             v-model="form.size"
                             class="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
                         >
-                            <option v-for="size in options.sizes" :key="size" :value="size">
+                            <option
+                                v-for="size in options.sizes"
+                                :key="size"
+                                :value="size"
+                            >
                                 {{ size.replace('x', ' × ') }}
                             </option>
                         </select>
@@ -153,7 +191,10 @@ function buy(dollars: number) {
 
                     <div class="grid gap-2">
                         <Label>Quality</Label>
-                        <div class="inline-flex rounded-md border border-input p-0.5" role="radiogroup">
+                        <div
+                            class="inline-flex rounded-md border border-input p-0.5"
+                            role="radiogroup"
+                        >
                             <button
                                 v-for="quality in options.qualities"
                                 :key="quality"
@@ -161,7 +202,11 @@ function buy(dollars: number) {
                                 role="radio"
                                 :aria-checked="form.quality === quality"
                                 class="flex-1 rounded px-3 py-1.5 text-sm capitalize transition"
-                                :class="form.quality === quality ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'"
+                                :class="
+                                    form.quality === quality
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                "
                                 @click="form.quality = quality"
                             >
                                 {{ quality }}
@@ -172,14 +217,25 @@ function buy(dollars: number) {
                 </div>
 
                 <div class="grid gap-2">
-                    <ReferenceImagesInput v-model="form.reference_images" :max="options.max_reference_images" />
-                    <InputError :message="form.errors.reference_images ?? referenceImageError" />
+                    <ReferenceImagesInput
+                        v-model="form.reference_images"
+                        :max="options.max_reference_images"
+                    />
+                    <InputError
+                        :message="
+                            form.errors.reference_images ?? referenceImageError
+                        "
+                    />
                 </div>
 
                 <div class="rounded-lg bg-muted/50 p-4 text-sm">
                     <template v-if="estimate.response && !estimateError">
-                        <div class="flex flex-wrap items-baseline justify-between gap-2">
-                            <span class="text-muted-foreground">Estimated price</span>
+                        <div
+                            class="flex flex-wrap items-baseline justify-between gap-2"
+                        >
+                            <span class="text-muted-foreground"
+                                >Estimated price</span
+                            >
                             <MoneyRange
                                 class="text-lg font-semibold"
                                 :min="estimate.response.min_price"
@@ -187,42 +243,70 @@ function buy(dollars: number) {
                             />
                         </div>
                         <p class="mt-2 text-xs text-muted-foreground">
-                            Output tokens are fixed by size and quality. Prompt and reasoning tokens are only known when the
-                            image is done, so we hold <Money :amount="estimate.response.max_price" /> and charge the exact cost
-                            (Pixelforge's price + {{ options.markup_percent }}%) when it finishes. Failed images are free.
+                            Output tokens are fixed by size and quality. Prompt
+                            and reasoning tokens are only known when the image
+                            is done, so we hold
+                            <Money :amount="estimate.response.max_price" /> and
+                            charge the exact cost (Pixelforge's price +
+                            {{ options.markup_percent }}%) when it finishes.
+                            Failed images are free.
                         </p>
-                        <p v-if="!estimate.response.affordable" class="mt-2 text-xs font-medium text-red-600">
-                            Your balance is below <Money :amount="estimate.response.max_price" />. Buy credits to generate this image.
+                        <p
+                            v-if="!estimate.response.affordable"
+                            class="mt-2 text-xs font-medium text-red-600"
+                        >
+                            Your balance is below
+                            <Money :amount="estimate.response.max_price" />. Buy
+                            credits to generate this image.
                         </p>
                     </template>
-                    <p v-else-if="estimateError" class="text-xs text-red-600">{{ estimateError }}</p>
-                    <p v-else class="text-muted-foreground">Write a prompt to see the price.</p>
+                    <p v-else-if="estimateError" class="text-xs text-red-600">
+                        {{ estimateError }}
+                    </p>
+                    <p v-else class="text-muted-foreground">
+                        Write a prompt to see the price.
+                    </p>
                 </div>
 
                 <InputError :message="creditsError" />
 
                 <div class="flex justify-end">
-                    <Button type="submit" :disabled="form.processing || !form.prompt.trim()">
+                    <Button
+                        type="submit"
+                        :disabled="form.processing || !form.prompt.trim()"
+                    >
                         {{ form.processing ? 'Submitting…' : 'Generate image' }}
                     </Button>
                 </div>
             </form>
 
-            <aside class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-5 dark:border-sidebar-border">
-                <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            <aside
+                class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-5 dark:border-sidebar-border"
+            >
+                <div
+                    class="flex items-center gap-2 text-sm text-muted-foreground"
+                >
                     <Wallet class="size-4" /> Credit balance
                 </div>
                 <Money class="text-3xl font-semibold" :amount="balance" />
                 <p class="text-xs text-muted-foreground">
-                    1 credit = 1 US dollar. The highest possible price is held while an image is in progress; the rest
-                    comes back when it finishes.
+                    1 credit = 1 US dollar. The highest possible price is held
+                    while an image is in progress; the rest comes back when it
+                    finishes.
                 </p>
                 <div class="grid grid-cols-3 gap-2">
-                    <Button v-for="dollars in CREDIT_PACKS" :key="dollars" variant="outline" @click="buy(dollars)">
+                    <Button
+                        v-for="dollars in CREDIT_PACKS"
+                        :key="dollars"
+                        variant="outline"
+                        @click="buy(dollars)"
+                    >
                         +${{ dollars }}
                     </Button>
                 </div>
-                <p class="text-xs text-muted-foreground">Demo purchase: no payment is taken.</p>
+                <p class="text-xs text-muted-foreground">
+                    Demo purchase: no payment is taken.
+                </p>
             </aside>
         </div>
 
@@ -231,8 +315,14 @@ function buy(dollars: number) {
             <p v-if="!generations.length" class="text-sm text-muted-foreground">
                 Nothing yet. Your images and what each one cost appear here.
             </p>
-            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                <GenerationCard v-for="generation in generations" :key="generation.id" :generation="generation" />
+            <div
+                class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            >
+                <GenerationCard
+                    v-for="generation in generations"
+                    :key="generation.id"
+                    :generation="generation"
+                />
             </div>
         </section>
     </div>
