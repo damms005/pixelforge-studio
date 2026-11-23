@@ -2,9 +2,14 @@
 
 namespace App\Providers;
 
+use App\Billing\Markup;
+use App\Models\User;
+use App\Pixelforge\PixelforgeClient;
+use App\Pixelforge\WebhookSignature;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -15,7 +20,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(PixelforgeClient::class, fn () => new PixelforgeClient(
+            baseUrl: config('services.pixelforge.base_url'),
+            apiKey: config('services.pixelforge.api_key'),
+        ));
+
+        $this->app->bind(Markup::class, fn () => new Markup(config('services.pixelforge.markup_percent')));
+
+        $this->app->bind(WebhookSignature::class, fn () => new WebhookSignature(
+            (string) config('services.pixelforge.webhook_secret'),
+        ));
     }
 
     /**
@@ -24,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        Gate::define('view-spend-report', fn (User $user) => $user->is_admin);
     }
 
     /**

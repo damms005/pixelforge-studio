@@ -18,6 +18,14 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    'pixelforge' => [
+        'base_url' => env('PIXELFORGE_BASE_URL', 'https://pixelforge.promptedit.dev/v1'),
+        'api_key' => env('PIXELFORGE_API_KEY'),
+        'webhook_secret' => env('PIXELFORGE_WEBHOOK_SECRET'),
+        // Users pay Pixelforge's cost plus this percentage.
+        'markup_percent' => (int) env('PIXELFORGE_MARKUP_PERCENT', 25),
+    ],
+
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],
