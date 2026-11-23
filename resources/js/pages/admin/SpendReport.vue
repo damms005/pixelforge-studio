@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { formatUsd } from '@/lib/money';
+import Money from '@/components/money/Money.vue';
 import { report } from '@/routes/admin';
 
 defineOptions({
@@ -82,19 +82,19 @@ function apply() {
         <div class="grid gap-4 sm:grid-cols-4">
             <div class="rounded-xl border p-4">
                 <div class="text-xs text-muted-foreground">Credit spend (charged to users)</div>
-                <div class="text-xl font-semibold tabular-nums">{{ formatUsd(totals.charged) }}</div>
+                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.charged" :decimals="4" /></div>
             </div>
             <div class="rounded-xl border p-4">
                 <div class="text-xs text-muted-foreground">Provider cost (our records)</div>
-                <div class="text-xl font-semibold tabular-nums">{{ formatUsd(totals.provider_cost) }}</div>
+                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.provider_cost" :decimals="4" /></div>
             </div>
             <div class="rounded-xl border p-4">
                 <div class="text-xs text-muted-foreground">Pixelforge reports</div>
-                <div class="text-xl font-semibold tabular-nums">{{ formatUsd(totals.pixelforge_cost) }}</div>
+                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.pixelforge_cost" :decimals="4" /></div>
             </div>
             <div class="rounded-xl border p-4">
                 <div class="text-xs text-muted-foreground">Profit</div>
-                <div class="text-xl font-semibold tabular-nums">{{ formatUsd(totals.profit) }}</div>
+                <div class="text-xl font-semibold tabular-nums"><Money :amount="totals.profit" :decimals="4" /></div>
             </div>
         </div>
 
@@ -112,14 +112,14 @@ function apply() {
                 </thead>
                 <tbody>
                     <template v-for="day in days" :key="day.date">
-                        <tr class="border-t font-medium">
+                        <tr class="border-t" :class="day.generations ? 'font-medium' : 'text-muted-foreground'">
                             <td class="px-4 py-2">{{ day.date }}</td>
                             <td class="px-4 py-2 text-right tabular-nums">{{ day.generations }}</td>
-                            <td class="px-4 py-2 text-right tabular-nums">{{ formatUsd(day.charged) }}</td>
-                            <td class="px-4 py-2 text-right tabular-nums">{{ formatUsd(day.provider_cost) }}</td>
+                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.charged" :decimals="4" /></td>
+                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.provider_cost" :decimals="4" /></td>
                             <td class="px-4 py-2 text-right tabular-nums">
                                 <span class="inline-flex items-center gap-1">
-                                    {{ formatUsd(day.pixelforge_cost) }}
+                                    <Money :amount="day.pixelforge_cost" :decimals="4" />
                                     <Check v-if="day.matches_pixelforge === true" class="size-4 text-emerald-600" aria-label="Matches" />
                                     <TriangleAlert
                                         v-else-if="day.matches_pixelforge === false"
@@ -128,15 +128,15 @@ function apply() {
                                     />
                                 </span>
                             </td>
-                            <td class="px-4 py-2 text-right tabular-nums">{{ formatUsd(day.profit) }}</td>
+                            <td class="px-4 py-2 text-right tabular-nums"><Money :amount="day.profit" :decimals="4" /></td>
                         </tr>
                         <tr v-for="user in day.users" :key="`${day.date}-${user.user_id}`" class="text-muted-foreground">
                             <td class="py-1.5 pr-4 pl-8">{{ user.name }} <span class="text-xs">({{ user.email }})</span></td>
                             <td class="px-4 py-1.5 text-right tabular-nums">{{ user.generations }}</td>
-                            <td class="px-4 py-1.5 text-right tabular-nums">{{ formatUsd(user.charged) }}</td>
-                            <td class="px-4 py-1.5 text-right tabular-nums">{{ formatUsd(user.provider_cost) }}</td>
+                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.charged" :decimals="4" /></td>
+                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.provider_cost" :decimals="4" /></td>
                             <td class="px-4 py-1.5" />
-                            <td class="px-4 py-1.5 text-right tabular-nums">{{ formatUsd(user.profit) }}</td>
+                            <td class="px-4 py-1.5 text-right tabular-nums"><Money :amount="user.profit" :decimals="4" /></td>
                         </tr>
                     </template>
                 </tbody>

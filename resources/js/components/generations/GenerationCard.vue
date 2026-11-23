@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ImageOff, LoaderCircle } from '@lucide/vue';
+import { CircleAlert, ImageOff, LoaderCircle } from '@lucide/vue';
 import { computed } from 'vue';
 import StatusBadge from '@/components/generations/StatusBadge.vue';
-import { formatUsd } from '@/lib/money';
+import Money from '@/components/money/Money.vue';
+import MoneyRange from '@/components/money/MoneyRange.vue';
 import type { Generation } from '@/types/generations';
 
 const props = defineProps<{ generation: Generation }>();
@@ -57,8 +58,9 @@ const createdAt = computed(() =>
             </div>
             <div
                 v-else-if="generation.status === 'failed'"
-                class="p-4 text-center text-sm text-red-700 dark:text-red-300"
+                class="flex flex-col items-center gap-2 p-4 text-center text-sm text-red-700 dark:text-red-300"
             >
+                <CircleAlert class="size-6" />
                 {{ generation.error_message }}
             </div>
             <div
@@ -86,7 +88,7 @@ const createdAt = computed(() =>
             </p>
 
             <p class="text-xs text-muted-foreground">
-                {{ generation.size }} · {{ generation.quality }} quality
+                {{ generation.size.replace('x', ' × ') }} · {{ generation.quality }} quality
                 <template v-if="generation.reference_images.length">
                     · {{ generation.reference_images.length }} reference
                     {{ generation.reference_images.length === 1 ? 'image' : 'images' }}
@@ -98,23 +100,17 @@ const createdAt = computed(() =>
             >
                 <div>
                     <dt class="text-muted-foreground">Estimated</dt>
-                    <dd class="font-medium tabular-nums">
-                        {{ formatUsd(generation.estimated_min) }} –
-                        {{ formatUsd(generation.estimated_max) }}
+                    <dd class="font-medium">
+                        <MoneyRange :min="generation.estimated_min" :max="generation.estimated_max" />
                     </dd>
                 </div>
                 <div>
                     <dt class="text-muted-foreground">Actual cost</dt>
-                    <dd
-                        class="font-medium tabular-nums"
-                        :title="generation.charged ?? undefined"
-                    >
+                    <dd class="font-medium">
                         <template v-if="generation.status === 'failed'">
-                            {{ formatUsd('0') }} (not charged)
+                            <Money amount="0" /> (not charged)
                         </template>
-                        <template v-else-if="generation.charged !== null">
-                            {{ formatUsd(generation.charged) }}
-                        </template>
+                        <Money v-else-if="generation.charged !== null" :amount="generation.charged" />
                         <template v-else>Known when finished</template>
                     </dd>
                 </div>

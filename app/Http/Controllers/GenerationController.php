@@ -76,8 +76,7 @@ class GenerationController extends Controller
 
             if (! $ledger->hold($generation)) {
                 throw ValidationException::withMessages([
-                    'credits' => 'You need at least $'.Nanodollars::toDecimal($estimate->maxPriceNanodollars)
-                        .' in credits for this generation (its highest possible price). Buy credits to continue.',
+                    'credits' => 'Your balance is below the highest possible price of this image. Buy credits to continue.',
                 ]);
             }
 

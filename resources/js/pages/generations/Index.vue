@@ -6,9 +6,10 @@ import { computed, onMounted, watch } from 'vue';
 import GenerationCard from '@/components/generations/GenerationCard.vue';
 import ReferenceImagesInput from '@/components/generations/ReferenceImagesInput.vue';
 import InputError from '@/components/InputError.vue';
+import Money from '@/components/money/Money.vue';
+import MoneyRange from '@/components/money/MoneyRange.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { formatUsd } from '@/lib/money';
 import { dashboard } from '@/routes';
 import { store as buyCredits } from '@/routes/credits';
 import { estimate as estimateRoute, store } from '@/routes/generations';
@@ -179,17 +180,19 @@ function buy(dollars: number) {
                     <template v-if="estimate.response && !estimateError">
                         <div class="flex flex-wrap items-baseline justify-between gap-2">
                             <span class="text-muted-foreground">Estimated price</span>
-                            <span class="text-lg font-semibold tabular-nums">
-                                {{ formatUsd(estimate.response.min_price) }} – {{ formatUsd(estimate.response.max_price) }}
-                            </span>
+                            <MoneyRange
+                                class="text-lg font-semibold"
+                                :min="estimate.response.min_price"
+                                :max="estimate.response.max_price"
+                            />
                         </div>
                         <p class="mt-2 text-xs text-muted-foreground">
                             Output tokens are fixed by size and quality. Prompt and reasoning tokens are only known when the
-                            image is done, so we hold {{ formatUsd(estimate.response.max_price) }} and charge the exact cost
+                            image is done, so we hold <Money :amount="estimate.response.max_price" /> and charge the exact cost
                             (Pixelforge's price + {{ options.markup_percent }}%) when it finishes. Failed images are free.
                         </p>
                         <p v-if="!estimate.response.affordable" class="mt-2 text-xs font-medium text-red-600">
-                            Your balance is below {{ formatUsd(estimate.response.max_price) }}. Buy credits to generate this image.
+                            Your balance is below <Money :amount="estimate.response.max_price" />. Buy credits to generate this image.
                         </p>
                     </template>
                     <p v-else-if="estimateError" class="text-xs text-red-600">{{ estimateError }}</p>
@@ -209,7 +212,7 @@ function buy(dollars: number) {
                 <div class="flex items-center gap-2 text-sm text-muted-foreground">
                     <Wallet class="size-4" /> Credit balance
                 </div>
-                <div class="text-3xl font-semibold tabular-nums" :title="balance">{{ formatUsd(balance) }}</div>
+                <Money class="text-3xl font-semibold" :amount="balance" />
                 <p class="text-xs text-muted-foreground">
                     1 credit = 1 US dollar. The highest possible price is held while an image is in progress; the rest
                     comes back when it finishes.

@@ -11,7 +11,10 @@ export function getInitials(fullName?: string): string {
         return '';
     }
 
-    const names = fullName.trim().split(/\s+/u).filter(Boolean);
+    const names = fullName
+        .trim()
+        .split(/\s+/u)
+        .filter((name) => /^\p{L}/u.test(name));
 
     if (names.length === 0) {
         return '';
