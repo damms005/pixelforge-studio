@@ -4,6 +4,34 @@ Image generation on the Pixelforge API, with exact per-token billing. Laravel 13
 
 Live: https://pixelforge-studio.162-0-214-46.sslip.io
 
+## Screenshots
+
+Taken from the live app with the demo account.
+
+**Welcome page**: what the app does, with log in and register.
+
+![Welcome page](docs/screenshots/welcome.png)
+
+**Generate**: the price range ($0.0582 – $0.0863625) shows before you submit. The top of the range is what the app holds.
+
+![Generate form with the price range](docs/screenshots/generate.png)
+
+**Hold at submit**: the balance drops by the highest price, $3.9843875 − $0.0863625 = $3.898025.
+
+![Balance with the hold taken while the image is in the queue](docs/screenshots/billing-hold.png)
+
+**Exact charge when done**: the hold is released and the exact cost, $0.06615, is charged ($3.9182375 left). The failed image next to it cost $0.00.
+
+![Balance after the exact charge, next to a failed image at $0.00](docs/screenshots/billing-charged.png)
+
+**History**: status, estimated range, actual cost and the failure reason for each image. Failed images cost $0.00.
+
+![Image history with succeeded and failed generations](docs/screenshots/history.png)
+
+**Mobile**: the generate form on a 390 px wide phone screen.
+
+<img src="docs/screenshots/mobile.png" alt="Generate form on a phone" width="300">
+
 ## What it does
 
 - **Generate**: prompt, size, quality and up to 4 reference image URLs. The price range is shown before you submit (from `GET /v1/pricing`).
