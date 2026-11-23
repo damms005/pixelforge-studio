@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Enums\GenerationStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\GenerationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -29,16 +29,16 @@ use Illuminate\Support\Carbon;
  * @property array<string, string>|null $rates
  * @property array<string, int>|null $usage
  * @property string|null $image_url
- * @property Carbon|null $image_url_expires_at
+ * @property CarbonImmutable|null $image_url_expires_at
  * @property string|null $error_code
  * @property string|null $error_message
  * @property string|null $retry_reason
  * @property int $submit_attempts
- * @property Carbon|null $provider_created_at
- * @property Carbon|null $started_at
- * @property Carbon|null $completed_at
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonImmutable|null $provider_created_at
+ * @property CarbonImmutable|null $started_at
+ * @property CarbonImmutable|null $completed_at
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  */
 #[Fillable([
     'uuid', 'user_id', 'status', 'prompt', 'size', 'quality', 'reference_images',
