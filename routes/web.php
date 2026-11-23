@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\SpendReportController;
 use App\Http\Controllers\CreditPurchaseController;
 use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\PixelforgeWebhookController;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -22,9 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.report');
 });
 
-// Pixelforge has no CSRF token; the request is authenticated by its signature instead.
-Route::post('webhooks/pixelforge', PixelforgeWebhookController::class)
-    ->withoutMiddleware(ValidateCsrfToken::class)
-    ->name('webhooks.pixelforge');
+// Excluded from CSRF checks in bootstrap/app.php; authenticated by its signature instead.
+Route::post('webhooks/pixelforge', PixelforgeWebhookController::class)->name('webhooks.pixelforge');
 
 require __DIR__.'/settings.php';
