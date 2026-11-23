@@ -6,27 +6,35 @@ Live: https://pixelforge-studio.162-0-214-46.sslip.io
 
 ## Screenshots
 
-Taken from the live app with the demo account.
+Taken from the live app. The user screens use the demo account; the spend report uses the admin account.
 
 **Welcome page**: what the app does, with log in and register.
 
 ![Welcome page](docs/screenshots/welcome.png)
 
-**Generate**: the price range ($0.0582 – $0.0863625) shows before you submit. The top of the range is what the app holds.
+**Log in**
+
+![Log in page](docs/screenshots/login.png)
+
+**Generate**: the price range ($0.06 – $0.09) shows before you submit. The top of the range is what the app holds.
 
 ![Generate form with the price range](docs/screenshots/generate.png)
 
-**Hold at submit**: the balance drops by the highest price, $3.9843875 − $0.0863625 = $3.898025.
+**Hold at submit**: the balance drops by the highest price, $3.834209375 − $0.08635625 = $3.747853125 (shown as $3.75).
 
-![Balance with the hold taken while the image is in the queue](docs/screenshots/billing-hold.png)
+![Balance with the hold taken while the image is drawn](docs/screenshots/billing-hold.png)
 
-**Exact charge when done**: the hold is released and the exact cost, $0.06615, is charged ($3.9182375 left). The failed image next to it cost $0.00.
+**Exact charge when done**: the hold is released and the exact cost, $0.072478125 (shown as $0.07), is charged: $3.747853125 + $0.08635625 − $0.072478125 = $3.76173125 (shown as $3.76).
 
-![Balance after the exact charge, next to a failed image at $0.00](docs/screenshots/billing-charged.png)
+![Balance after the exact charge](docs/screenshots/billing-charged.png)
 
 **History**: status, estimated range, actual cost and the failure reason for each image. Failed images cost $0.00.
 
 ![Image history with succeeded and failed generations](docs/screenshots/history.png)
+
+**Spend report** (`/admin/report`, admins only): credit spend, provider cost and profit per UTC day and per user, to 4 decimals. A check mark shows that the day's provider cost matches `GET /v1/usage`.
+
+![Admin spend report](docs/screenshots/admin-report.png)
 
 **Mobile**: the generate form on a 390 px wide phone screen.
 
@@ -46,6 +54,7 @@ Taken from the live app with the demo account.
 - Provider cost = Σ tokens × rate, using the `rates` on the generation object (fixed when it was created), not today's rates. If a rate ever needed a fraction of a nanodollar, `Rates::costOf()` throws rather than round.
 - User price = cost × 1.25, rounded **up** to the next nanodollar. The rounding is at most $0.000000001 per generation, and always in the operator's favour, so we never sell below cost + markup.
 - The estimate range uses the published token rules: text tokens = ceil(characters / 4) ± 15% (Unicode characters, not bytes), 765 tokens per reference image, exact output tokens, and the min/max reasoning tokens for the quality. The top of the range is what we hold.
+- **Exact in storage, rounded on screen.** One formatter (`resources/js/lib/money.ts`) shows every amount: balances and charges to the cent ($3.76), a non-zero amount below a cent as "< $0.01", price ranges to the cent ($0.06 – $0.09, or 4 decimals when both ends round to the same cent), and the admin report to 4 decimals. Hover over an amount to see its exact value to the nanodollar. Rounding is only for display; holds, charges and balances always use the exact value.
 - Every balance change is a row in `credit_transactions` (`purchase`, `hold`, `hold_release`, `charge`), and `users.balance_nanodollars` moves by the same amount in the same transaction. A unique index on `(generation_id, type)` makes a second charge for the same generation impossible at the database level.
 
 ## Pixelforge's failure modes
